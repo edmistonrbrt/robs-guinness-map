@@ -7,7 +7,7 @@
 
   <title>Rob's Guinness Map</title>
 
-  <!-- Leaflet map styling -->
+  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -24,10 +24,12 @@
       color: white;
       text-align: center;
       padding: 15px;
+      font-size: 20px;
+      font-weight: bold;
     }
 
     #map {
-      height: calc(100vh - 60px);
+      height: calc(100vh - 58px);
       width: 100%;
     }
   </style>
@@ -36,23 +38,22 @@
 <body>
 
   <header>
-    Rob's Guinness Map
+    🍺 Rob's Guinness Map
   </header>
 
   <div id="map"></div>
 
-  <!-- Leaflet map software -->
+  <!-- Leaflet JavaScript -->
   <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
   </script>
 
   <script>
-    const map = L.map('map').setView([54.65, -3.55], 10);
 
-    L.marker([54.65, -3.55])
-      .addTo(map)
-      .bindPopup("<b>My first Guinness 🍺</b><br>Workington");
+    // Create the map
+    const map = L.map('map').setView([54.65, -3.55], 13);
 
+    // Add OpenStreetMap tiles
     L.tileLayer(
       'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       {
@@ -60,7 +61,15 @@
       }
     ).addTo(map);
 
+    // Add our first Guinness location
+    L.marker([54.65, -3.55])
+      .addTo(map)
+      .bindPopup(
+        "<b>My first Guinness </b><br>Workington"
+      );
+
   </script>
 
 </body>
+
 </html>
