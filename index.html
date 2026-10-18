@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Rob's Guinness Map</title>
+
+  <!-- Leaflet map styling -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: #111;
+      color: white;
+      text-align: center;
+      padding: 15px;
+    }
+
+    #map {
+      height: calc(100vh - 60px);
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    Rob's Guinness Map
+  </header>
+
+  <div id="map"></div>
+
+  <!-- Leaflet map software -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+  </script>
+
+  <script>
+    const map = L.map('map').setView([54.65, -3.55], 10);
+
+    L.tileLayer(
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        attribution: '&copy; OpenStreetMap contributors'
+      }
+    ).addTo(map);
+
+  </script>
+
+</body>
+</html>
