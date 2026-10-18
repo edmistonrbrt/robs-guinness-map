@@ -51,9 +51,9 @@
   <script>
 
     // Create the map
-    const map = L.map('map').setView([54.65, -3.55], 13);
+    const map = L.map('map').setView([54.662629, -3.366302], 15);
 
-    // Add OpenStreetMap tiles
+    // Add OpenStreetMap
     L.tileLayer(
       'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       {
@@ -61,11 +61,13 @@
       }
     ).addTo(map);
 
-    // Add our first Guinness location
-    L.marker([54.65, -3.55])
+    // The New Cock & Bull
+    L.marker([54.662629, -3.366302])
       .addTo(map)
       .bindPopup(
-        "<b>My first Guinness </b><br>Workington"
+        "<b> The New Cock & Bull</b><br>" +
+        "Cockermouth<br>" +
+        "Guinness — Thursday 15 October 2026"
       );
 
   </script>
