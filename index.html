@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Rob's Guinness Map</title>
 
-  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  >
+  />
 
   <style>
     body {
@@ -20,10 +18,12 @@
     }
 
     header {
+      height: 58px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
       background: #111;
       color: white;
-      text-align: center;
-      padding: 15px;
       font-size: 20px;
       font-weight: bold;
     }
@@ -31,6 +31,21 @@
     #map {
       height: calc(100vh - 58px);
       width: 100%;
+    }
+
+    .guinness-marker {
+      width: 34px;
+      height: 34px;
+      background: #111;
+      border: 3px solid white;
+      border-radius: 50%;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
     }
   </style>
 </head>
@@ -43,35 +58,83 @@
 
   <div id="map"></div>
 
-  <!-- Leaflet JavaScript -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-  </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
+    const SUPABASE_URL = "https://pteassljmnepsbfzxjks.supabase.co/rest/v1/";
+    const SUPABASE_KEY = "sb_publishable_xlodpsQzM2DOUbBDgMcZIg_KkS-ZOTl";
 
-    // Create the map
-    const map = L.map('map').setView([54.662629, -3.366302], 15);
+    const supabaseClient = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
 
-    // Add OpenStreetMap
+    const map = L.map("map").setView([54.65, -3.55], 10);
+
     L.tileLayer(
-      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       {
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: "&copy; OpenStreetMap contributors"
       }
     ).addTo(map);
 
-    // The New Cock & Bull
-    L.marker([54.662629, -3.366302])
-      .addTo(map)
-      .bindPopup(
-        "<b> The New Cock & Bull</b><br>" +
-        "Cockermouth<br>" +
-        "Guinness — Thursday 15 October 2026"
-      );
+    async function loadPubs() {
 
+      const { data: pubs, error: pubsError } =
+        await supabaseClient
+          .from("pubs")
+          .select("*");
+
+      if (pubsError) {
+        console.error("Error loading pubs:", pubsError);
+        return;
+      }
+
+      const { data: guinnesses, error: guinnessError } =
+        await supabaseClient
+          .from("guinnesses")
+          .select("*");
+
+      if (guinnessError) {
+        console.error("Error loading Guinnesses:", guinnessError);
+        return;
+      }
+
+      pubs.forEach(pub => {
+
+        const count = guinnesses.filter(
+          guinness => guinness.pub_id === pub.id
+        ).length;
+
+        const icon = L.divIcon({
+          className: "",
+          html: `
+            <div class="guinness-marker">
+              ${count}
+            </div>
+          `,
+          iconSize: [40, 40],
+          iconAnchor: [20, 20],
+          popupAnchor: [0, -20]
+        });
+
+        L.marker(
+          [pub.latitude, pub.longitude],
+          { icon: icon }
+        )
+        .addTo(map)
+        .bindPopup(`
+          <strong>${pub.name}</strong><br>
+          ${pub.town}<br><br>
+          Guinnesses here: ${count}
+        `);
+      });
+    }
+
+    loadPubs();
   </script>
 
 </body>
-
 </html>
