@@ -7,17 +7,13 @@
 
   <title>Rob's Guinness Map</title>
 
-  <!-- Leaflet CSS -->
+  <!-- Leaflet -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
 
   <style>
-
-    /* -----------------------------
-       PAGE
-    ----------------------------- */
 
     body {
       margin: 0;
@@ -28,6 +24,7 @@
       height: 58px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       padding: 0 16px;
       background: #111;
       color: white;
@@ -36,22 +33,110 @@
       box-sizing: border-box;
     }
 
+    #loginButton,
+    #logoutButton {
+      background: white;
+      color: #111;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #userStatus {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: normal;
+    }
+
     #map {
       height: calc(100vh - 58px);
       width: 100%;
     }
 
 
-    /* -----------------------------
-       GUINNESS MARKERS
-    ----------------------------- */
+    /* =========================
+       LOGIN BOX
+       ========================= */
+
+    .login-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      width: calc(100% - 40px);
+      max-width: 350px;
+
+      background: white;
+      padding: 24px;
+
+      border-radius: 10px;
+
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+
+      z-index: 2000;
+      box-sizing: border-box;
+    }
+
+    .login-box h2 {
+      margin-top: 0;
+    }
+
+    .login-box input {
+      width: 100%;
+      box-sizing: border-box;
+
+      padding: 12px;
+      margin-bottom: 10px;
+
+      border: 1px solid #ccc;
+      border-radius: 5px;
+
+      font-size: 16px;
+    }
+
+    .login-box button {
+      width: 100%;
+
+      padding: 12px;
+
+      background: #111;
+      color: white;
+
+      border: none;
+      border-radius: 5px;
+
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .login-message {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+
+    /* =========================
+       MARKERS
+       ========================= */
 
     .guinness-marker {
       width: 32px;
       height: 32px;
+
       background: #000;
+
       border: 3px solid #fff;
       border-radius: 50%;
+
       color: #fff;
 
       display: flex;
@@ -61,25 +146,28 @@
       font-size: 14px;
       font-weight: bold;
 
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
     }
 
 
-    /* -----------------------------
-       TOWN SEARCH
-    ----------------------------- */
+    /* =========================
+       SEARCH
+       ========================= */
 
     .search-box {
       background: white;
       padding: 6px;
+
       border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 
       display: flex;
     }
 
     .search-box input {
       width: 150px;
+
       padding: 8px;
 
       border: 1px solid #ccc;
@@ -90,6 +178,7 @@
 
     .search-box button {
       margin-left: 5px;
+
       padding: 8px 10px;
 
       border: none;
@@ -99,13 +188,12 @@
       color: white;
 
       font-size: 14px;
-      cursor: pointer;
     }
 
 
-    /* -----------------------------
-       CURRENT LOCATION BUTTON
-    ----------------------------- */
+    /* =========================
+       LOCATION
+       ========================= */
 
     .location-button {
       background: white;
@@ -113,38 +201,107 @@
       width: 40px;
       height: 40px;
 
-      border: 2px solid rgba(0, 0, 0, 0.3);
+      border: 2px solid rgba(0,0,0,0.3);
       border-radius: 4px;
 
       font-size: 24px;
-      font-weight: bold;
 
       cursor: pointer;
 
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
     }
 
   </style>
+
 </head>
 
 
 <body>
 
+
+  <!-- =========================
+       HEADER
+       ========================= -->
+
   <header>
-    Rob's Guinness Map
+
+    <div>
+      Rob's Guinness Map
+    </div>
+
+    <div id="userStatus">
+
+      <span id="loggedInText" class="hidden">
+        Logged in
+      </span>
+
+      <button id="loginButton">
+        Login
+      </button>
+
+      <button id="logoutButton" class="hidden">
+        Logout
+      </button>
+
+    </div>
+
   </header>
+
+
+  <!-- =========================
+       MAP
+       ========================= -->
 
   <div id="map"></div>
 
 
+  <!-- =========================
+       LOGIN WINDOW
+       ========================= -->
+
+  <div
+    id="loginBox"
+    class="login-box hidden"
+  >
+
+    <h2>
+      Login
+    </h2>
+
+    <input
+      id="email"
+      type="email"
+      placeholder="Email"
+    >
+
+    <input
+      id="password"
+      type="password"
+      placeholder="Password"
+    >
+
+    <button id="submitLogin">
+      Login
+    </button>
+
+    <div
+      id="loginMessage"
+      class="login-message"
+    ></div>
+
+  </div>
+
+
   <!-- Leaflet -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
   <script>
+
 
     /* =====================================================
        SUPABASE
@@ -164,8 +321,9 @@
       );
 
 
+
     /* =====================================================
-       CREATE MAP
+       MAP
        ===================================================== */
 
     const map =
@@ -175,10 +333,6 @@
       );
 
 
-    /* =====================================================
-       OPENSTREETMAP
-       ===================================================== */
-
     L.tileLayer(
       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       {
@@ -186,6 +340,218 @@
           "&copy; OpenStreetMap contributors"
       }
     ).addTo(map);
+
+
+
+    /* =====================================================
+       LOGIN ELEMENTS
+       ===================================================== */
+
+    const loginButton =
+      document.getElementById(
+        "loginButton"
+      );
+
+    const logoutButton =
+      document.getElementById(
+        "logoutButton"
+      );
+
+    const loginBox =
+      document.getElementById(
+        "loginBox"
+      );
+
+    const submitLogin =
+      document.getElementById(
+        "submitLogin"
+      );
+
+    const loggedInText =
+      document.getElementById(
+        "loggedInText"
+      );
+
+    const loginMessage =
+      document.getElementById(
+        "loginMessage"
+      );
+
+
+
+    /* =====================================================
+       OPEN LOGIN
+       ===================================================== */
+
+    loginButton.onclick =
+      function () {
+
+        loginBox.classList.remove(
+          "hidden"
+        );
+
+        loginMessage.textContent = "";
+
+      };
+
+
+
+    /* =====================================================
+       LOGIN
+       ===================================================== */
+
+    submitLogin.onclick =
+      async function () {
+
+
+        const email =
+          document.getElementById(
+            "email"
+          ).value.trim();
+
+
+        const password =
+          document.getElementById(
+            "password"
+          ).value;
+
+
+        if (!email || !password) {
+
+          loginMessage.textContent =
+            "Please enter your email and password.";
+
+          return;
+
+        }
+
+
+        loginMessage.textContent =
+          "Logging in...";
+
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth
+            .signInWithPassword({
+
+              email: email,
+
+              password: password
+
+            });
+
+
+        if (error) {
+
+          loginMessage.textContent =
+            error.message;
+
+          return;
+
+        }
+
+
+        loginBox.classList.add(
+          "hidden"
+        );
+
+        updateLoginDisplay(
+          data.user
+        );
+
+      };
+
+
+
+    /* =====================================================
+       LOGOUT
+       ===================================================== */
+
+    logoutButton.onclick =
+      async function () {
+
+        await supabaseClient.auth.signOut();
+
+        updateLoginDisplay(
+          null
+        );
+
+      };
+
+
+
+    /* =====================================================
+       UPDATE LOGIN DISPLAY
+       ===================================================== */
+
+    function updateLoginDisplay(
+      user
+    ) {
+
+
+      if (user) {
+
+        loginButton.classList.add(
+          "hidden"
+        );
+
+        logoutButton.classList.remove(
+          "hidden"
+        );
+
+        loggedInText.classList.remove(
+          "hidden"
+        );
+
+      }
+
+      else {
+
+        loginButton.classList.remove(
+          "hidden"
+        );
+
+        logoutButton.classList.add(
+          "hidden"
+        );
+
+        loggedInText.classList.add(
+          "hidden"
+        );
+
+      }
+
+    }
+
+
+
+    /* =====================================================
+       CHECK EXISTING LOGIN
+       ===================================================== */
+
+    async function checkLogin() {
+
+
+      const {
+        data
+      } =
+        await supabaseClient.auth
+          .getSession();
+
+
+      updateLoginDisplay(
+        data.session
+          ? data.session.user
+          : null
+      );
+
+    }
+
+
+    checkLogin();
 
 
 
@@ -206,6 +572,7 @@
 
         onAdd: function () {
 
+
           const button =
             L.DomUtil.create(
               "button",
@@ -224,87 +591,100 @@
           );
 
 
-          button.onclick = function () {
+          button.onclick =
+            function () {
 
 
-            if (!navigator.geolocation) {
+              if (
+                !navigator.geolocation
+              ) {
 
-              alert(
-                "Location is not supported by your browser."
-              );
+                alert(
+                  "Location is not supported by your browser."
+                );
 
-              return;
-            }
+                return;
 
-
-            navigator.geolocation
-              .getCurrentPosition(
-
-                function (position) {
+              }
 
 
-                  const latitude =
-                    position.coords.latitude;
+              navigator.geolocation
+                .getCurrentPosition(
 
-                  const longitude =
-                    position.coords.longitude;
-
-
-                  /* Zoom to location */
-
-                  map.setView(
-                    [latitude, longitude],
-                    15
-                  );
+                  function (
+                    position
+                  ) {
 
 
-                  /* Remove old location marker */
+                    const latitude =
+                      position.coords.latitude;
 
-                  if (currentLocationMarker) {
 
-                    map.removeLayer(
-                      currentLocationMarker
+                    const longitude =
+                      position.coords.longitude;
+
+
+                    map.setView(
+                      [
+                        latitude,
+                        longitude
+                      ],
+                      15
                     );
 
+
+                    if (
+                      currentLocationMarker
+                    ) {
+
+                      map.removeLayer(
+                        currentLocationMarker
+                      );
+
+                    }
+
+
+                    currentLocationMarker =
+                      L.circleMarker(
+
+                        [
+                          latitude,
+                          longitude
+                        ],
+
+                        {
+                          radius: 7,
+                          fillOpacity: 1
+                        }
+
+                      )
+
+                      .addTo(map)
+
+                      .bindPopup(
+                        "Your current location"
+                      );
+
+                  },
+
+
+                  function () {
+
+                    alert(
+                      "Unable to get your location. Please allow location access."
+                    );
+
+                  },
+
+
+                  {
+                    enableHighAccuracy: true,
+                    timeout: 10000
                   }
 
+                );
 
-                  /* Add current location marker */
-
-                  currentLocationMarker =
-                    L.circleMarker(
-                      [latitude, longitude],
-                      {
-                        radius: 7,
-                        fillOpacity: 1
-                      }
-                    )
-                    .addTo(map)
-                    .bindPopup(
-                      "Your current location"
-                    );
-
-
-                },
-
-
-                function () {
-
-                  alert(
-                    "Unable to get your location. Please allow location access."
-                  );
-
-                },
-
-
-                {
-                  enableHighAccuracy: true,
-                  timeout: 10000
-                }
-
-              );
-
-          };
+            };
 
 
           return button;
@@ -321,7 +701,7 @@
 
 
     /* =====================================================
-       TOWN SEARCH BOX
+       SEARCH
        ===================================================== */
 
     const SearchControl =
@@ -350,59 +730,59 @@
               placeholder="Search town..."
             >
 
-            <button id="searchButton">
+            <button
+              id="searchButton"
+            >
               Search
             </button>
 
           `;
 
 
-          /* Stop map moving while using search */
-
           L.DomEvent.disableClickPropagation(
             container
           );
-
 
           L.DomEvent.disableScrollPropagation(
             container
           );
 
 
-          setTimeout(function () {
+          setTimeout(
+            function () {
 
 
-            const searchButton =
-              document.getElementById(
-                "searchButton"
-              );
+              document
+                .getElementById(
+                  "searchButton"
+                )
+                .onclick =
+                searchTown;
 
 
-            const searchInput =
-              document.getElementById(
-                "townSearch"
-              );
+              document
+                .getElementById(
+                  "townSearch"
+                )
+                .addEventListener(
+                  "keydown",
+                  function (event) {
+
+                    if (
+                      event.key === "Enter"
+                    ) {
+
+                      searchTown();
+
+                    }
+
+                  }
+                );
 
 
-            searchButton.onclick =
-              searchTown;
-
-
-            searchInput.addEventListener(
-              "keydown",
-              function (event) {
-
-                if (event.key === "Enter") {
-
-                  searchTown();
-
-                }
-
-              }
-            );
-
-
-          }, 0);
+            },
+            0
+          );
 
 
           return container;
@@ -419,7 +799,7 @@
 
 
     /* =====================================================
-       SEARCH FOR A TOWN
+       SEARCH TOWN
        ===================================================== */
 
     async function searchTown() {
@@ -436,9 +816,7 @@
 
 
       if (!town) {
-
         return;
-
       }
 
 
@@ -467,7 +845,9 @@
           await response.json();
 
 
-        if (results.length === 0) {
+        if (
+          results.length === 0
+        ) {
 
           alert(
             "Town not found."
@@ -491,27 +871,26 @@
 
 
         map.setView(
-          [latitude, longitude],
+          [
+            latitude,
+            longitude
+          ],
           13
         );
 
 
       }
 
-
       catch (error) {
-
 
         console.error(
           "Town search error:",
           error
         );
 
-
         alert(
           "There was a problem searching for the town."
         );
-
 
       }
 
@@ -520,13 +899,11 @@
 
 
     /* =====================================================
-       LOAD PUBS FROM SUPABASE
+       LOAD PUBS
        ===================================================== */
 
     async function loadPubs() {
 
-
-      /* Get pubs */
 
       const {
         data: pubs,
@@ -549,14 +926,6 @@
       }
 
 
-
-      /* Get Guinness records
-
-         IMPORTANT:
-         Your table is currently called
-         "guinesses" with one N.
-      */
-
       const {
         data: guinnesses,
         error: guinnessError
@@ -578,107 +947,92 @@
       }
 
 
-
-      /* =================================================
-         CREATE A MARKER FOR EACH PUB
-         ================================================= */
-
-      pubs.forEach(function (pub) {
+      pubs.forEach(
+        function (pub) {
 
 
-        /* Count Guinnesses at this pub */
+          const count =
+            guinnesses.filter(
+              function (guinness) {
 
-        const count =
-          guinnesses.filter(
+                return (
+                  guinness.pub_id === pub.id
+                );
 
-            function (guinness) {
+              }
+            ).length;
 
-              return (
-                guinness.pub_id === pub.id
-              );
 
+          const icon =
+            L.divIcon({
+
+              className: "",
+
+              html: `
+
+                <div
+                  class="guinness-marker"
+                >
+                  ${count}
+                </div>
+
+              `,
+
+              iconSize: [
+                38,
+                38
+              ],
+
+              iconAnchor: [
+                19,
+                19
+              ],
+
+              popupAnchor: [
+                0,
+                -20
+              ]
+
+            });
+
+
+          L.marker(
+            [
+              pub.latitude,
+              pub.longitude
+            ],
+            {
+              icon: icon
             }
+          )
 
-          ).length;
+          .addTo(map)
 
+          .bindPopup(`
 
+            <strong>
+              ${pub.name}
+            </strong>
 
-        /* Create black circular marker */
+            <br>
 
-        const icon =
-          L.divIcon({
+            ${pub.town}
 
-            className: "",
+            <br><br>
 
-            html: `
-              <div class="guinness-marker">
-                ${count}
-              </div>
-            `,
+            Guinnesses here:
+            ${count}
 
-            iconSize: [
-              38,
-              38
-            ],
-
-            iconAnchor: [
-              19,
-              19
-            ],
-
-            popupAnchor: [
-              0,
-              -20
-            ]
-
-          });
+          `);
 
 
-
-        /* Add marker to map */
-
-        L.marker(
-          [
-            pub.latitude,
-            pub.longitude
-          ],
-          {
-            icon: icon
-          }
-        )
-
-        .addTo(map)
-
-        .bindPopup(`
-
-          <strong>
-            ${pub.name}
-          </strong>
-
-          <br>
-
-          ${pub.town}
-
-          <br><br>
-
-          Guinnesses here:
-          ${count}
-
-        `);
-
-
-      });
+        }
+      );
 
     }
 
 
-
-    /* =====================================================
-       START
-       ===================================================== */
-
     loadPubs();
-
 
   </script>
 
