@@ -9,7 +9,7 @@
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  >
 
   <style>
     body {
@@ -48,7 +48,8 @@
     }
 
     #loginButton,
-    #addGuinnessButton {
+    #addGuinnessButton,
+    #addPubButton {
       background: white;
       color: #111;
     }
@@ -99,9 +100,13 @@
       box-sizing: border-box;
     }
 
+    /*
+      Moved below the Leaflet zoom controls.
+    */
+
     .location-button {
       position: absolute;
-      top: 70px;
+      top: 120px;
       left: 10px;
       z-index: 1000;
       background: white;
@@ -111,7 +116,9 @@
       cursor: pointer;
     }
 
-    /* Modal */
+    /* =========================
+       MODALS
+    ========================= */
 
     .modal {
       display: none;
@@ -128,10 +135,12 @@
       background: white;
       width: calc(100% - 30px);
       max-width: 420px;
-      margin: 80px auto;
+      margin: 70px auto;
       padding: 20px;
       border-radius: 8px;
       box-sizing: border-box;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
     }
 
     .modal-content h2 {
@@ -182,12 +191,21 @@
       flex: 1;
     }
 
-    #guinnessMessage {
+    .location-form-button {
+      background: #eee;
+      color: #111;
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .form-message {
       margin-top: 12px;
       font-size: 14px;
     }
 
-    /* Login modal */
+    /* =========================
+       LOGIN
+    ========================= */
 
     .login-box {
       display: none;
@@ -233,44 +251,79 @@
 <body>
 
 <header>
+
   <h1>Rob's Guinness Map</h1>
 
   <div class="header-buttons">
-    <span id="loggedInText">Logged in</span>
 
-    <button id="addGuinnessButton" style="display:none;">
+    <span id="loggedInText">
+      Logged in
+    </span>
+
+    <button
+      id="addGuinnessButton"
+      style="display:none;"
+    >
       + Add Guinness
+    </button>
+
+    <button
+      id="addPubButton"
+      style="display:none;"
+    >
+      + Add Pub
     </button>
 
     <button id="loginButton">
       Login
     </button>
 
-    <button id="logoutButton" style="display:none;">
+    <button
+      id="logoutButton"
+      style="display:none;"
+    >
       Logout
     </button>
+
   </div>
+
 </header>
+
 
 <div id="map"></div>
 
+
 <div class="search-box">
+
   <input
     id="townSearch"
     type="text"
     placeholder="Search town"
   >
-  <button id="searchButton">Search</button>
+
+  <button id="searchButton">
+    Search
+  </button>
+
 </div>
 
-<button class="location-button" id="locationButton">
+
+<button
+  class="location-button"
+  id="locationButton"
+>
   Current location
 </button>
 
 
-<!-- Login modal -->
+<!-- =========================
+     LOGIN MODAL
+========================= -->
 
-<div class="login-box" id="loginBox">
+<div
+  class="login-box"
+  id="loginBox"
+>
 
   <div class="login-content">
 
@@ -299,45 +352,72 @@
 </div>
 
 
-<!-- Add Guinness modal -->
+<!-- =========================
+     ADD GUINNESS MODAL
+========================= -->
 
-<div class="modal" id="guinnessModal">
+<div
+  class="modal"
+  id="guinnessModal"
+>
 
   <div class="modal-content">
 
     <h2>Add Guinness</h2>
 
     <div class="form-row">
-      <label for="pubSelect">Pub</label>
+
+      <label for="pubSelect">
+        Pub
+      </label>
 
       <select id="pubSelect">
-        <option value="">Choose a pub</option>
+
+        <option value="">
+          Choose a pub
+        </option>
+
       </select>
+
     </div>
 
+
     <div class="form-row">
-      <label for="guinnessDate">Date</label>
+
+      <label for="guinnessDate">
+        Date
+      </label>
 
       <input
         type="date"
         id="guinnessDate"
       >
+
     </div>
 
+
     <div class="form-row">
-      <label for="guinnessRating">Rating</label>
+
+      <label for="guinnessRating">
+        Rating
+      </label>
 
       <input
         type="number"
         id="guinnessRating"
         min="1"
-        max="5"
-        placeholder="1-5"
+        max="10"
+        placeholder="1-10"
       >
+
     </div>
 
+
     <div class="form-row">
-      <label for="guinnessPrice">Price</label>
+
+      <label for="guinnessPrice">
+        Price
+      </label>
 
       <input
         type="number"
@@ -346,16 +426,23 @@
         step="0.01"
         placeholder="e.g. 5.50"
       >
+
     </div>
 
+
     <div class="form-row">
-      <label for="guinnessNotes">Notes</label>
+
+      <label for="guinnessNotes">
+        Notes
+      </label>
 
       <textarea
         id="guinnessNotes"
         placeholder="Any notes about this Guinness..."
       ></textarea>
+
     </div>
+
 
     <div class="modal-buttons">
 
@@ -375,7 +462,124 @@
 
     </div>
 
-    <p id="guinnessMessage"></p>
+
+    <p
+      class="form-message"
+      id="guinnessMessage"
+    ></p>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     ADD PUB MODAL
+========================= -->
+
+<div
+  class="modal"
+  id="pubModal"
+>
+
+  <div class="modal-content">
+
+    <h2>Add Pub</h2>
+
+
+    <div class="form-row">
+
+      <label for="pubName">
+        Pub name
+      </label>
+
+      <input
+        type="text"
+        id="pubName"
+        placeholder="e.g. The Cock & Bull"
+      >
+
+    </div>
+
+
+    <div class="form-row">
+
+      <label for="pubTown">
+        Town
+      </label>
+
+      <input
+        type="text"
+        id="pubTown"
+        placeholder="e.g. Cockermouth"
+      >
+
+    </div>
+
+
+    <div class="form-row">
+
+      <label for="pubLatitude">
+        Latitude
+      </label>
+
+      <input
+        type="number"
+        id="pubLatitude"
+        step="any"
+        placeholder="e.g. 54.662629"
+      >
+
+    </div>
+
+
+    <div class="form-row">
+
+      <label for="pubLongitude">
+        Longitude
+      </label>
+
+      <input
+        type="number"
+        id="pubLongitude"
+        step="any"
+        placeholder="e.g. -3.366302"
+      >
+
+    </div>
+
+
+    <button
+      class="location-form-button"
+      id="useCurrentLocationForPub"
+    >
+      Use current location
+    </button>
+
+
+    <div class="modal-buttons">
+
+      <button
+        class="cancel-button"
+        id="cancelPub"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="save-button"
+        id="savePub"
+      >
+        Save Pub
+      </button>
+
+    </div>
+
+
+    <p
+      class="form-message"
+      id="pubMessage"
+    ></p>
 
   </div>
 
@@ -386,47 +590,52 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
 <script>
 
   /* =========================
      SUPABASE
   ========================= */
 
-  const SUPABASE_URL = "https://pteassljmnepsbfzxjks.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_xlodpsQzM2DOUbBDgMcZIg_KkS-ZOTl";
+  const SUPABASE_URL =
+    "https://pteassljmnepsbfzxjks.supabase.co";
 
-  const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+  const SUPABASE_KEY =
+    "sb_publishable_xlodpsQzM2DOUbBDgMcZIg_KkS-ZOTl";
+
+  const supabaseClient =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
 
 
   /* =========================
      MAP
   ========================= */
 
-  const map = L.map("map").setView(
-    [54.6, -3.3],
-    9
-  );
+  const map =
+    L.map("map").setView(
+      [54.6, -3.3],
+      9
+    );
+
 
   L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
-      attribution: "&copy; OpenStreetMap contributors"
+      attribution:
+        "&copy; OpenStreetMap contributors"
     }
   ).addTo(map);
 
 
-  /* =========================
-     MARKER LAYER
-  ========================= */
-
-  const markerLayer = L.layerGroup().addTo(map);
+  const markerLayer =
+    L.layerGroup().addTo(map);
 
 
   /* =========================
-     LOGIN ELEMENTS
+     ELEMENTS
   ========================= */
 
   const loginButton =
@@ -438,6 +647,12 @@
   const loggedInText =
     document.getElementById("loggedInText");
 
+  const addGuinnessButton =
+    document.getElementById("addGuinnessButton");
+
+  const addPubButton =
+    document.getElementById("addPubButton");
+
   const loginBox =
     document.getElementById("loginBox");
 
@@ -447,12 +662,9 @@
   const loginMessage =
     document.getElementById("loginMessage");
 
-  const addGuinnessButton =
-    document.getElementById("addGuinnessButton");
-
 
   /* =========================
-     GUINNESS FORM ELEMENTS
+     GUINNESS FORM
   ========================= */
 
   const guinnessModal =
@@ -484,98 +696,164 @@
 
 
   /* =========================
+     PUB FORM
+  ========================= */
+
+  const pubModal =
+    document.getElementById("pubModal");
+
+  const pubName =
+    document.getElementById("pubName");
+
+  const pubTown =
+    document.getElementById("pubTown");
+
+  const pubLatitude =
+    document.getElementById("pubLatitude");
+
+  const pubLongitude =
+    document.getElementById("pubLongitude");
+
+  const savePub =
+    document.getElementById("savePub");
+
+  const cancelPub =
+    document.getElementById("cancelPub");
+
+  const pubMessage =
+    document.getElementById("pubMessage");
+
+  const useCurrentLocationForPub =
+    document.getElementById(
+      "useCurrentLocationForPub"
+    );
+
+
+  /* =========================
      LOGIN
   ========================= */
 
-  loginButton.addEventListener("click", () => {
+  loginButton.addEventListener(
+    "click",
+    () => {
 
-    loginBox.style.display = "block";
+      loginBox.style.display =
+        "block";
 
-  });
+    }
+  );
 
 
-  submitLogin.addEventListener("click", async () => {
+  submitLogin.addEventListener(
+    "click",
+    async () => {
 
-    const email =
-      document.getElementById("email").value;
+      const email =
+        document.getElementById("email").value;
 
-    const password =
-      document.getElementById("password").value;
-
-    loginMessage.textContent = "Logging in...";
-
-    const { error } =
-      await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
-
-    if (error) {
+      const password =
+        document.getElementById("password").value;
 
       loginMessage.textContent =
-        error.message;
+        "Logging in...";
 
-      return;
+
+      const { error } =
+        await supabaseClient.auth
+          .signInWithPassword({
+            email,
+            password
+          });
+
+
+      if (error) {
+
+        loginMessage.textContent =
+          error.message;
+
+        return;
+
+      }
+
+
+      loginMessage.textContent = "";
+
+      loginBox.style.display =
+        "none";
+
+      updateLoginUI(true);
+
     }
-
-    loginMessage.textContent = "";
-
-    loginBox.style.display = "none";
-
-    updateLoginUI(true);
-
-  });
+  );
 
 
-  logoutButton.addEventListener("click", async () => {
+  logoutButton.addEventListener(
+    "click",
+    async () => {
 
-    await supabaseClient.auth.signOut();
+      await supabaseClient.auth.signOut();
 
-    updateLoginUI(false);
+      updateLoginUI(false);
 
-  });
+    }
+  );
 
 
   function updateLoginUI(loggedIn) {
 
     if (loggedIn) {
 
-      loginButton.style.display = "none";
+      loginButton.style.display =
+        "none";
 
-      logoutButton.style.display = "block";
+      logoutButton.style.display =
+        "block";
 
-      loggedInText.style.display = "block";
+      loggedInText.style.display =
+        "block";
 
-      addGuinnessButton.style.display = "block";
+      addGuinnessButton.style.display =
+        "block";
+
+      addPubButton.style.display =
+        "block";
 
     } else {
 
-      loginButton.style.display = "block";
+      loginButton.style.display =
+        "block";
 
-      logoutButton.style.display = "none";
+      logoutButton.style.display =
+        "none";
 
-      loggedInText.style.display = "none";
+      loggedInText.style.display =
+        "none";
 
-      addGuinnessButton.style.display = "none";
+      addGuinnessButton.style.display =
+        "none";
+
+      addPubButton.style.display =
+        "none";
 
     }
 
   }
 
 
-  /* =========================
-     CHECK EXISTING LOGIN
-  ========================= */
-
   async function checkLogin() {
 
     const {
       data: { session }
-    } = await supabaseClient.auth.getSession();
+    } =
+      await supabaseClient.auth.getSession();
 
-    updateLoginUI(!!session);
+
+    updateLoginUI(
+      !!session
+    );
 
   }
+
 
   checkLogin();
 
@@ -588,84 +866,204 @@
 
     markerLayer.clearLayers();
 
-    const { data: pubs, error: pubsError } =
+
+    const {
+      data: pubs,
+      error: pubsError
+    } =
       await supabaseClient
         .from("pubs")
         .select("*");
+
 
     if (pubsError) {
 
       console.error(pubsError);
 
       return;
+
     }
 
 
-    const { data: guinesses, error: guinnessError } =
+    const {
+      data: guinesses,
+      error: guinnessError
+    } =
       await supabaseClient
         .from("guinesses")
         .select("*");
+
 
     if (guinnessError) {
 
       console.error(guinnessError);
 
       return;
+
     }
 
 
+    /* =========================
+       PUB MARKERS
+    ========================= */
+
     pubs.forEach(pub => {
 
-      const count =
+      const pubGuinnesses =
         guinesses.filter(
-          g => g.pub_id === pub.id
-        ).length;
+          g =>
+            Number(g.pub_id) ===
+            Number(pub.id)
+        );
 
 
-      const icon = L.divIcon({
+      const count =
+        pubGuinnesses.length;
 
-        className: "",
 
-        html:
-          `<div class="guinness-marker">${count}</div>`,
+      /*
+        Calculate average rating
+      */
 
-        iconSize: [38, 38],
+      const ratings =
+        pubGuinnesses
+          .map(g => Number(g.rating))
+          .filter(
+            value => !isNaN(value)
+          );
 
-        iconAnchor: [19, 19],
 
-        popupAnchor: [0, -20]
+      const averageRating =
+        ratings.length > 0
+          ? (
+              ratings.reduce(
+                (total, value) =>
+                  total + value,
+                0
+              ) / ratings.length
+            ).toFixed(1)
+          : null;
 
-      });
+
+      /*
+        Calculate average price
+      */
+
+      const prices =
+        pubGuinnesses
+          .map(g => Number(g.price))
+          .filter(
+            value =>
+              !isNaN(value)
+          );
+
+
+      const averagePrice =
+        prices.length > 0
+          ? (
+              prices.reduce(
+                (total, value) =>
+                  total + value,
+                0
+              ) / prices.length
+            ).toFixed(2)
+          : null;
+
+
+      const icon =
+        L.divIcon({
+
+          className: "",
+
+          html:
+            `<div class="guinness-marker">${count}</div>`,
+
+          iconSize: [38, 38],
+
+          iconAnchor: [19, 19],
+
+          popupAnchor: [0, -20]
+
+        });
+
+
+      /*
+        Build popup
+      */
+
+      let popup =
+        `<strong>${pub.name}</strong><br>` +
+        `${pub.town}<br><br>` +
+        `<strong>Guinnesses:</strong> ${count}<br>`;
+
+
+      if (averageRating !== null) {
+
+        popup +=
+          `<strong>Average rating:</strong> ` +
+          `${averageRating}/10<br>`;
+
+      } else {
+
+        popup +=
+          `<strong>Average rating:</strong> ` +
+          `Not rated<br>`;
+
+      }
+
+
+      if (averagePrice !== null) {
+
+        popup +=
+          `<strong>Average price:</strong> ` +
+          `£${averagePrice}`;
+
+      } else {
+
+        popup +=
+          `<strong>Average price:</strong> ` +
+          `No prices recorded`;
+
+      }
 
 
       L.marker(
-        [pub.latitude, pub.longitude],
+        [
+          pub.latitude,
+          pub.longitude
+        ],
         { icon }
       )
-      .bindPopup(
-        `<strong>${pub.name}</strong><br>${pub.town}<br>${count} Guinness${count === 1 ? "" : "es"}`
-      )
+      .bindPopup(popup)
       .addTo(markerLayer);
 
     });
 
 
-    /* Populate pub dropdown */
+    /* =========================
+       POPULATE PUB DROPDOWN
+    ========================= */
 
     pubSelect.innerHTML =
       '<option value="">Choose a pub</option>';
 
+
     pubs.forEach(pub => {
 
       const option =
-        document.createElement("option");
+        document.createElement(
+          "option"
+        );
 
-      option.value = pub.id;
+      option.value =
+        pub.id;
 
       option.textContent =
         `${pub.name} — ${pub.town}`;
 
-      pubSelect.appendChild(option);
+      pubSelect.appendChild(
+        option
+      );
 
     });
 
@@ -683,34 +1081,31 @@
     "click",
     () => {
 
-      guinnessMessage.textContent = "";
+      guinnessMessage.textContent =
+        "";
 
       guinnessDate.value =
-        new Date().toISOString().split("T")[0];
+        new Date()
+          .toISOString()
+          .split("T")[0];
 
-      guinnessModal.style.display = "block";
+      guinnessModal.style.display =
+        "block";
 
     }
   );
 
-
-  /* =========================
-     CANCEL
-  ========================= */
 
   cancelGuinness.addEventListener(
     "click",
     () => {
 
-      guinnessModal.style.display = "none";
+      guinnessModal.style.display =
+        "none";
 
     }
   );
 
-
-  /* =========================
-     SAVE GUINNESS
-  ========================= */
 
   saveGuinness.addEventListener(
     "click",
@@ -738,6 +1133,7 @@
           "Please choose a pub.";
 
         return;
+
       }
 
 
@@ -747,10 +1143,12 @@
           "Please choose a date.";
 
         return;
+
       }
 
 
-      saveGuinness.disabled = true;
+      saveGuinness.disabled =
+        true;
 
       guinnessMessage.textContent =
         "Saving...";
@@ -761,15 +1159,21 @@
           .from("guinesses")
           .insert({
 
-            pub_id: Number(pubId),
+            pub_id:
+              Number(pubId),
 
-            date: date,
+            date:
+              date,
 
             rating:
-              rating ? Number(rating) : null,
+              rating
+                ? Number(rating)
+                : null,
 
             price:
-              price ? Number(price) : null,
+              price
+                ? Number(price)
+                : null,
 
             notes:
               notes || null
@@ -784,32 +1188,249 @@
         guinnessMessage.textContent =
           error.message;
 
-        saveGuinness.disabled = false;
+        saveGuinness.disabled =
+          false;
 
         return;
+
       }
 
 
       guinnessMessage.textContent =
         "Guinness saved.";
 
-      saveGuinness.disabled = false;
+
+      setTimeout(
+        () => {
+
+          guinnessModal.style.display =
+            "none";
+
+          guinnessRating.value =
+            "";
+
+          guinnessPrice.value =
+            "";
+
+          guinnessNotes.value =
+            "";
+
+          saveGuinness.disabled =
+            false;
+
+          loadPubs();
+
+        },
+        500
+      );
+
+    }
+  );
 
 
-      setTimeout(() => {
+  /* =========================
+     ADD PUB
+  ========================= */
 
-        guinnessModal.style.display =
-          "none";
+  addPubButton.addEventListener(
+    "click",
+    () => {
 
-        guinnessRating.value = "";
+      pubMessage.textContent =
+        "";
 
-        guinnessPrice.value = "";
+      pubName.value =
+        "";
 
-        guinnessNotes.value = "";
+      pubTown.value =
+        "";
 
-        loadPubs();
+      pubLatitude.value =
+        "";
 
-      }, 500);
+      pubLongitude.value =
+        "";
+
+      pubModal.style.display =
+        "block";
+
+    }
+  );
+
+
+  cancelPub.addEventListener(
+    "click",
+    () => {
+
+      pubModal.style.display =
+        "none";
+
+    }
+  );
+
+
+  /*
+    Use phone's current location
+    for the new pub.
+  */
+
+  useCurrentLocationForPub.addEventListener(
+    "click",
+    () => {
+
+      if (!navigator.geolocation) {
+
+        pubMessage.textContent =
+          "Location is not available on this device.";
+
+        return;
+
+      }
+
+
+      pubMessage.textContent =
+        "Getting your location...";
+
+
+      navigator.geolocation.getCurrentPosition(
+
+        position => {
+
+          pubLatitude.value =
+            position.coords.latitude.toFixed(6);
+
+          pubLongitude.value =
+            position.coords.longitude.toFixed(6);
+
+          pubMessage.textContent =
+            "Location added.";
+
+        },
+
+        () => {
+
+          pubMessage.textContent =
+            "Unable to get your location.";
+
+        }
+
+      );
+
+    }
+  );
+
+
+  /*
+    Save new pub
+  */
+
+  savePub.addEventListener(
+    "click",
+    async () => {
+
+      const name =
+        pubName.value.trim();
+
+      const town =
+        pubTown.value.trim();
+
+      const latitude =
+        pubLatitude.value;
+
+      const longitude =
+        pubLongitude.value;
+
+
+      if (!name) {
+
+        pubMessage.textContent =
+          "Please enter the pub name.";
+
+        return;
+
+      }
+
+
+      if (!town) {
+
+        pubMessage.textContent =
+          "Please enter the town.";
+
+        return;
+
+      }
+
+
+      if (!latitude || !longitude) {
+
+        pubMessage.textContent =
+          "Please enter the location.";
+
+        return;
+
+      }
+
+
+      savePub.disabled =
+        true;
+
+      pubMessage.textContent =
+        "Saving...";
+
+
+      const { error } =
+        await supabaseClient
+          .from("pubs")
+          .insert({
+
+            name:
+              name,
+
+            town:
+              town,
+
+            latitude:
+              Number(latitude),
+
+            longitude:
+              Number(longitude)
+
+          });
+
+
+      if (error) {
+
+        console.error(error);
+
+        pubMessage.textContent =
+          error.message;
+
+        savePub.disabled =
+          false;
+
+        return;
+
+      }
+
+
+      pubMessage.textContent =
+        "Pub saved.";
+
+
+      setTimeout(
+        () => {
+
+          pubModal.style.display =
+            "none";
+
+          savePub.disabled =
+            false;
+
+          loadPubs();
+
+        },
+        500
+      );
 
     }
   );
@@ -822,7 +1443,10 @@
   async function searchTown() {
 
     const town =
-      document.getElementById("townSearch").value;
+      document
+        .getElementById("townSearch")
+        .value;
+
 
     if (!town) return;
 
@@ -831,6 +1455,7 @@
       await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(town)}`
       );
+
 
     const results =
       await response.json();
@@ -841,6 +1466,7 @@
       alert("Town not found.");
 
       return;
+
     }
 
 
@@ -900,10 +1526,12 @@
           );
 
           return;
+
         }
 
 
         navigator.geolocation.getCurrentPosition(
+
           position => {
 
             const lat =
@@ -926,7 +1554,9 @@
               }
             )
             .addTo(map)
-            .bindPopup("Your current location")
+            .bindPopup(
+              "Your current location"
+            )
             .openPopup();
 
           },
@@ -943,6 +1573,40 @@
 
       }
     );
+
+
+  /* =========================
+     CLOSE MODALS WHEN
+     CLICKING OUTSIDE
+  ========================= */
+
+  window.addEventListener(
+    "click",
+    event => {
+
+      if (event.target === guinnessModal) {
+
+        guinnessModal.style.display =
+          "none";
+
+      }
+
+      if (event.target === pubModal) {
+
+        pubModal.style.display =
+          "none";
+
+      }
+
+      if (event.target === loginBox) {
+
+        loginBox.style.display =
+          "none";
+
+      }
+
+    }
+  );
 
 </script>
 
